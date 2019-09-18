@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.lang.reflect.Array;
 import java.util.*;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/estados")
 public class EstadoController {
@@ -53,6 +53,13 @@ public class EstadoController {
         }
 
         return est;
+    }
+
+
+    @RequestMapping(value = "/like/{id_post}",method = RequestMethod.PUT)
+    public estado likeEstado(@PathVariable("id_post") String id_post, @Valid @RequestBody estado Estados){
+    Estados.setId(id_post);
+    return estadoRepo.save(Estados);
     }
 
     @Autowired

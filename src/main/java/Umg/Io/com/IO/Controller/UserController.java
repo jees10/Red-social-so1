@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/usuarios")
 public class UserController {
@@ -50,6 +51,7 @@ public class UserController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public usuario Lgon(usuario usuario) {
+        System.out.println( usuario.getCorreo() );
         List<usuario> usuarioLogin = usuarioRepo.findByClaveAndCorreo(usuario.getClave(), usuario.getCorreo());
         if (usuarioLogin.isEmpty()) {
             return null;

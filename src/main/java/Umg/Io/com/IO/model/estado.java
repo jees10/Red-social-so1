@@ -9,6 +9,8 @@ public class estado {
      private String correo;
      private String imagen;
      private String texto;
+     private int like;
+
 
 
     public String getId() {
@@ -43,10 +45,19 @@ public class estado {
         this.correo = correo;
     }
 
-    public estado(String id, String correo, String imagen, String texto) {
+    public int getLike() {
+        return like;
+    }
+
+    public void setLike(int like) {
+        this.like = like;
+    }
+
+    public estado(String id, String correo, String imagen, String texto, int like) {
         this.id = id;
         this.correo = correo;
         this.imagen = imagen;
         this.texto = texto;
+        this.like = like;
     }
 }

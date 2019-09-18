@@ -4,6 +4,7 @@ import Umg.Io.com.IO.model.mensaje;
 import Umg.Io.com.IO.reporsitory.MensajeRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
@@ -14,29 +15,30 @@ import reactor.core.publisher.Flux;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+import org.springframework.util.StringUtils;
 
 
 @RestController
-@RequestMapping("/mensajes")
+@RequestMapping(value = "/mensajes")
 @Slf4j
 public class MensajeController {
+
 
     @Autowired
     private MensajeRepo mensajeRepo;
 
-    public static List<mensaje> listaMensajes = new ArrayList<>();
+
     private EmitterProcessor<mensaje> notificacion;
 
     @PostConstruct
-    private void crearNotificacion(){ notificacion = EmitterProcessor.<mensaje>create();}
-
+    private void crearNotificacion(){
+        notificacion = EmitterProcessor.<mensaje>create();
+    }
 
     @RequestMapping(
-            path = "/all",
+            path = "/todos",
             method = RequestMethod.GET,
             produces = "application/json")
     public List<mensaje> findAll(){
@@ -44,29 +46,47 @@ public class MensajeController {
     }
 
     @RequestMapping(
-            path = "/chat/{canal}",
-            method = RequestMethod.GET,
-            produces = "application/json")
-    public List<mensaje>findByCanal(@PathVariable("canal") String canal){
-        return  mensajeRepo.findByCanal(canal);
-    }
-
-    @RequestMapping(
             path = "/create",
             method = RequestMethod.POST)
     public ResponseEntity<?>create(@RequestBody mensaje Mensaje){
+            Mensaje.setCanal(UUID.randomUUID().toString());
+            System.out.println("mensaje a guardar: "+Mensaje);
         mensajeRepo.save(Mensaje);
-        listaMensajes.add(Mensaje);
-        System.out.println("notificando Mensaje"+Mensaje.getMensaje());
+        System.out.println("Notificando nuveo Mensaje: "+Mensaje.getMensaje());
         notificacion.onNext(Mensaje);
-        return new ResponseEntity<>(Mensaje,HttpStatus.OK);
+        return new ResponseEntity<>(Mensaje, HttpStatus.OK);
     }
+
+    @RequestMapping(
+            path = "/chats/{remitente}",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public List<mensaje> findByRemitente(@PathVariable("remitente")String remitente){
+        return mensajeRepo.findByRemitente(remitente);
+    }
+    
+    @RequestMapping(
+            path = "/recibidos/{recibidor}",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public List<mensaje> findByRecibidor(@PathVariable("recibidor")String recibidor){
+        return  mensajeRepo.findByRecibidor(recibidor);
+    }
+
+    @RequestMapping(
+            path = "/chat/{canal}",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public List<mensaje> findByCanal(@PathVariable("canal")String canal){
+        return mensajeRepo.findByCanal(canal);
+    }
+
 
     private Flux<ServerSentEvent<mensaje>> getMensajeSSE(){
         return notificacion
                 .log().map(
                         (mensaje -> {
-                            System.out.println("enviando Mensaje"+mensaje.getRemitente());
+                            System.out.println("Enviando Mensaje:"+mensaje.getRemitente());
                             return ServerSentEvent.<mensaje>builder()
                                     .id(UUID.randomUUID().toString())
                                     .event("mensaje-result")
@@ -98,7 +118,10 @@ public class MensajeController {
     }
 
 
-
-
-
 }
+
+
+
+
+
+
