@@ -6,7 +6,7 @@ public class like {
 
     @Id
     private String id;
-    private String id_estado;
+    private String idEstado;
     private String correo;
 
 
@@ -18,12 +18,12 @@ public class like {
         this.id = id;
     }
 
-    public String getId_estado() {
-        return id_estado;
+    public String getIdEstado() {
+        return idEstado;
     }
 
-    public void setId_estado(String id_estado) {
-        this.id_estado = id_estado;
+    public void setIdEstado(String idEstado) {
+        this.idEstado = idEstado;
     }
 
     public String getCorreo() {

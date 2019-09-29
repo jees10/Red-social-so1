@@ -49,7 +49,9 @@ public class MensajeController {
             path = "/create",
             method = RequestMethod.POST)
     public ResponseEntity<?>create(@RequestBody mensaje Mensaje){
+        if(StringUtils.isEmpty(Mensaje.getCanal())){
             Mensaje.setCanal(UUID.randomUUID().toString());
+        }
             System.out.println("mensaje a guardar: "+Mensaje);
         mensajeRepo.save(Mensaje);
         System.out.println("Notificando nuveo Mensaje: "+Mensaje.getMensaje());
